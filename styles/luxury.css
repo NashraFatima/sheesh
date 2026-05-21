@@ -1,0 +1,112 @@
+@layer utilities {
+  .text-gold-gradient {
+    background: linear-gradient(
+      135deg,
+      #f5e6c8 0%,
+      #d4af37 35%,
+      #b8860b 65%,
+      #f5e6c8 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .bg-luxury-radial {
+    background: radial-gradient(
+      ellipse 80% 50% at 50% -20%,
+      rgba(212, 175, 55, 0.15),
+      transparent 70%
+    );
+  }
+
+  .glass-luxury {
+    background: rgba(12, 12, 14, 0.55);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border: 1px solid rgba(212, 175, 55, 0.12);
+  }
+
+  .glow-gold {
+    box-shadow:
+      0 0 40px rgba(212, 175, 55, 0.15),
+      0 0 80px rgba(212, 175, 55, 0.08);
+  }
+
+  .glow-gold-strong {
+    box-shadow:
+      0 0 30px rgba(212, 175, 55, 0.35),
+      0 0 60px rgba(212, 175, 55, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .border-gold-subtle {
+    border-color: rgba(212, 175, 55, 0.2);
+  }
+
+  .noise-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .line-gold {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(212, 175, 55, 0.8),
+      transparent
+    );
+    height: 1px;
+  }
+
+  .mask-fade-b {
+    mask-image: linear-gradient(to bottom, black 60%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent);
+  }
+
+  .section-padding {
+    @apply px-6 py-24 md:px-12 md:py-32 lg:px-20 lg:py-40;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .film-grain {
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+  }
+
+  .luxury-shadow {
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.4),
+      0 0 1px rgba(212, 175, 55, 0.1);
+  }
+
+  .image-hover-zoom {
+    @apply transition-transform duration-[1.2s] ease-out group-hover:scale-110;
+  }
+
+  .premium-glow-ring {
+    box-shadow:
+      0 0 0 1px rgba(212, 175, 55, 0.08),
+      0 8px 32px rgba(0, 0, 0, 0.45),
+      0 0 48px rgba(212, 175, 55, 0.06);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .film-grain {
+      display: none;
+    }
+  }
+}

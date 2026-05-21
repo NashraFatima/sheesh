@@ -1,0 +1,56 @@
+"use client";
+
+import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { AdminSidebar } from "@/components/admin/layout/AdminSidebar";
+import { AdminTopbar } from "@/components/admin/layout/AdminTopbar";
+import { adminNavItems } from "@/lib/admin/navigation";
+import { cn } from "@/lib/utils";
+
+const titles: Record<string, string> = {
+  "/admin/dashboard": "Dashboard",
+  "/admin/menu": "Menu Management",
+  "/admin/events": "Event Management",
+  "/admin/reservations": "Reservations",
+  "/admin/catering": "Catering Inquiries",
+  "/admin/franchise": "Franchise Applications",
+  "/admin/gallery": "Gallery",
+  "/admin/settings": "Settings",
+};
+
+export function AdminShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+
+  const title =
+    titles[pathname] ??
+    adminNavItems.find((n) => pathname.startsWith(n.href))?.label ??
+    "Admin";
+
+  return (
+    <div className="min-h-screen bg-[#050505]">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(212,175,55,0.06),transparent_50%)]" />
+      <div className="film-grain pointer-events-none fixed inset-0 opacity-50" />
+      <AdminSidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        collapsed={collapsed}
+      />
+      <div
+        className={cn(
+          "relative transition-[margin] duration-300",
+          collapsed ? "lg:ml-[72px]" : "lg:ml-64"
+        )}
+      >
+        <AdminTopbar
+          title={title}
+          onMenuClick={() => setSidebarOpen(true)}
+          onToggleCollapse={() => setCollapsed(!collapsed)}
+          collapsed={collapsed}
+        />
+        <div className="p-4 md:p-6 lg:p-8">{children}</div>
+      </div>
+    </div>
+  );
+}
