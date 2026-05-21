@@ -7,15 +7,15 @@ export const menuImages = {
   sandwiches: p(1633578),
   burger: p(156114),
   bbq: p(361184),
-  desi: p(2474661),
-  biryani: p(1624487),
-  karahi: p(2474661),
+  desi: p(12737663), // Dhiraj Jain's gourmet Indian curry under luxury lighting
+  biryani: p(12737656), // Dhiraj Jain's majestic Michelin-star biryani close-up
+  karahi: p(12737660), // Dhiraj Jain's authentic wok-charred karahi
   chinese: p(357756),
   tacos: p(2097090),
   soup: p(691114),
   fries: p(1893556),
   wings: p(60616),
-  chaat: p(5560763),
+  chaat: p(12737659), // Dhiraj Jain's exquisite plated South Asian street chaat
   hookah: p(1806038),
   hookahLounge: p(1267320),
   hookahPremium: p(1806038),
@@ -67,7 +67,7 @@ const itemOverrides: Record<string, string> = {
   "beef-nihari": menuImages.desi,
   "sheesh-bbq-platter": menuImages.bbq,
   "gola-kabob-roll": menuImages.tacos,
-  "bang-bang-shrimp": p(566566),
+  "bang-bang-shrimp": p(699953), // Gourmet cooked chili prawns under rich lighting
   "special-shahi-falooda": menuImages.falooda,
   "gulab-jamun-cheesecake": menuImages.cake,
   "ocean-blue-mojito": menuImages.mocktails,

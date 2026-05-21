@@ -41,7 +41,7 @@ export function SmoothScrollProvider({
         const el = document.querySelector(target);
         if (!el) return;
         if (lenis) {
-          lenis.scrollTo(el, { offset, duration: 1.2 });
+          lenis.scrollTo(el as HTMLElement, { offset, duration: 1.2 });
         } else {
           el.scrollIntoView({ behavior: "smooth", block: "start" });
         }

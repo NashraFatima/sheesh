@@ -44,22 +44,35 @@ export function CuisineSection() {
           </div>
           <div
             data-reveal
-            className="grid grid-cols-2 gap-3 md:gap-4"
+            className="grid grid-cols-2 gap-4 md:gap-5"
           >
             {plates.map((plate, i) => (
               <div
                 key={plate.alt}
-                className={`group relative overflow-hidden rounded-2xl border border-white/[0.06] ${plate.span ?? "aspect-square"}`}
+                className={`group relative overflow-hidden rounded-2xl border border-white/[0.05] bg-[#141418]/20 transition-all duration-[1.2s] ease-out hover:border-[#d4af37]/25 hover:shadow-[0_12px_48px_rgba(212,175,55,0.06)] ${plate.span ?? "aspect-square"}`}
               >
+                {/* Micro technical tags */}
+                <div className="absolute top-4 left-4 z-10 font-[family-name:var(--font-accent)] text-[8px] tracking-[0.2em] text-[#d4af37]/80 uppercase pointer-events-none opacity-0 transition-opacity duration-700 group-hover:opacity-100">
+                  PLATE // 0{i + 1}
+                </div>
+                <div className="absolute bottom-4 right-4 z-10 font-[family-name:var(--font-accent)] text-[8px] tracking-[0.2em] text-white/35 uppercase pointer-events-none">
+                  EST. 2012
+                </div>
+
                 <Image
                   src={plate.src}
                   alt={plate.alt}
                   fill
-                  className="object-cover transition-transform duration-[1.2s] group-hover:scale-110"
+                  className="object-cover transition-transform duration-[1.8s] ease-out group-hover:scale-105"
                   sizes="(max-width: 768px) 50vw, 25vw"
                   priority={i === 0}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0e]/90 via-transparent to-transparent opacity-80" />
+                
+                {/* Elegant overlay gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0e]/95 via-[#0c0c0e]/30 to-transparent transition-opacity duration-700 group-hover:opacity-90" />
+                
+                {/* Inner premium border hairline */}
+                <div className="absolute inset-3 z-10 border border-white/5 pointer-events-none rounded-xl transition-colors duration-700 group-hover:border-[#d4af37]/15" />
               </div>
             ))}
           </div>

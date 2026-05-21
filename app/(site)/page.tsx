@@ -14,12 +14,19 @@ export default function HomePage() {
     <>
       <HeroSection />
       <ExperienceSection />
+      <div className="line-gold opacity-[0.08]" />
       <CuisineSection />
+      <div className="line-gold opacity-[0.08]" />
       <HookahSection />
+      <div className="line-gold opacity-[0.08]" />
       <FeaturedMenuSection />
+      <div className="line-gold opacity-[0.08]" />
       <EventsPreviewSection />
+      <div className="line-gold opacity-[0.08]" />
       <CateringPreviewSection />
+      <div className="line-gold opacity-[0.08]" />
       <FranchisePreviewSection />
+      <div className="line-gold opacity-[0.08]" />
       <ReviewsSection />
       <FinalCTASection />
     </>

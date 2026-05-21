@@ -18,10 +18,10 @@ interface MagneticButtonProps {
 }
 
 const variants = {
-  gold: "bg-gradient-to-r from-[#8b6914] via-[#d4af37] to-[#8b6914] text-[#050505] glow-gold-strong hover:shadow-[0_0_40px_rgba(212,175,55,0.4)]",
+  gold: "bg-gradient-to-r from-[#8b6914] via-[#d4af37] to-[#8b6914] text-[#050505] shadow-[0_4px_14px_rgba(212,175,55,0.25)] hover:shadow-[0_0_40px_rgba(212,175,55,0.6),inset_0_-2px_10px_rgba(255,255,255,0.3)] hover:brightness-110",
   outline:
-    "border border-[#d4af37]/40 bg-transparent text-[#f5e6c8] hover:border-[#d4af37] hover:bg-[#d4af37]/5",
-  ghost: "bg-white/5 text-[#f5e6c8] hover:bg-white/10 border border-white/10",
+    "border border-[#d4af37]/40 bg-black/20 backdrop-blur-md text-[#f5e6c8] shadow-[0_4px_14px_rgba(0,0,0,0.2)] hover:border-[#d4af37] hover:bg-[#d4af37]/10 hover:shadow-[0_0_30px_rgba(212,175,55,0.3),inset_0_1px_4px_rgba(212,175,55,0.2)]",
+  ghost: "bg-white/5 backdrop-blur-md text-[#f5e6c8] hover:bg-white/10 border border-white/10 hover:border-white/30 hover:shadow-[0_0_20px_rgba(255,255,255,0.15)]",
 };
 
 function isExternalHref(href: string) {
