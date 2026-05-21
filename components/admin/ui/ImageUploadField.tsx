@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Upload, X, ImageIcon } from "lucide-react";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import { cn } from "@/lib/utils";
+import { resolveImageUrl } from "@/lib/image-url";
 
 interface ImageUploadFieldProps {
   label?: string;
@@ -30,14 +31,15 @@ export function ImageUploadField({
   onPreviewChange,
   className,
 }: ImageUploadFieldProps) {
-  const upload = useImageUpload(initialPreview);
+  const resolvedInitialPreview = resolveImageUrl(initialPreview);
+  const upload = useImageUpload(resolvedInitialPreview);
 
   const onInputChange = (files: FileList | null) => {
     upload.handleFiles(files);
     const f = files?.[0] ?? null;
     onFileChange?.(f);
     if (!f) {
-      onPreviewChange?.(initialPreview ?? null);
+      onPreviewChange?.(resolvedInitialPreview || null);
       return;
     }
     const url = URL.createObjectURL(f);
@@ -79,16 +81,16 @@ export function ImageUploadField({
             aspectClass[aspect]
           )}
         >
-          {upload.preview.startsWith("blob:") ? (
+          {resolveImageUrl(upload.preview).startsWith("blob:") ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={upload.preview}
+              src={resolveImageUrl(upload.preview)}
               alt="Preview"
               className="h-full w-full object-cover"
             />
           ) : (
             <Image
-              src={upload.preview}
+              src={resolveImageUrl(upload.preview)}
               alt="Preview"
               fill
               className="object-cover"

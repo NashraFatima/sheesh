@@ -6,6 +6,7 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import type { MenuItem } from "@/lib/menu/types";
 import { MenuTagBadge } from "@/components/ui/MenuTagBadge";
 import { cn } from "@/lib/utils";
+import { resolveImageUrl } from "@/lib/image-url";
 
 interface MenuItemCardProps {
   item: MenuItem;
@@ -19,6 +20,7 @@ export function MenuItemCard({
   variant = "default",
 }: MenuItemCardProps) {
   const isFeatured = variant === "featured" || item.layout === "wide";
+  const imageSrc = resolveImageUrl(item.image);
   const ref = useRef<HTMLElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -70,7 +72,7 @@ export function MenuItemCard({
         )}
       >
         <Image
-          src={item.image}
+          src={imageSrc}
           alt={item.name}
           fill
           sizes={

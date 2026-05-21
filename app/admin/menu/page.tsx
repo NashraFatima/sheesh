@@ -12,6 +12,7 @@ import { MenuItemForm } from "@/components/admin/menu/MenuItemForm";
 import type { MenuItem, MenuTag } from "@/lib/menu/types";
 import { cn } from "@/lib/utils";
 import { menuApi } from "@/lib/admin/data-api";
+import { resolveImageUrl } from "@/lib/image-url";
 
 export default function AdminMenuPage() {
   const [search, setSearch] = useState("");
@@ -143,7 +144,7 @@ export default function AdminMenuPage() {
                 <td className="px-4 py-3">
                   <div className="relative size-12 overflow-hidden rounded-lg border border-white/[0.06]">
                     <Image
-                      src={item.image}
+                      src={resolveImageUrl(item.image)}
                       alt=""
                       fill
                       className="object-cover"

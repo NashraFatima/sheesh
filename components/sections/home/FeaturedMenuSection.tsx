@@ -9,6 +9,7 @@ import { MenuTagBadge } from "@/components/ui/MenuTagBadge";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { menuApi } from "@/lib/admin/data-api";
 import type { MenuItem } from "@/lib/menu/types";
+import { resolveImageUrl } from "@/lib/image-url";
 
 export function FeaturedMenuSection() {
   const [featuredMenuItems, setFeaturedMenuItems] = useState<MenuItem[]>([]);
@@ -63,7 +64,7 @@ export function FeaturedMenuSection() {
                   </div>
 
                   <Image
-                    src={hero.image}
+                    src={resolveImageUrl(hero.image)}
                     alt={hero.name}
                     fill
                     className="object-cover transition-transform duration-[1.8s] ease-out group-hover:scale-105"
@@ -109,7 +110,7 @@ export function FeaturedMenuSection() {
                 >
                   <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-white/5">
                     <Image
-                      src={item.image}
+                      src={resolveImageUrl(item.image)}
                       alt={item.name}
                       fill
                       className="object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-108"

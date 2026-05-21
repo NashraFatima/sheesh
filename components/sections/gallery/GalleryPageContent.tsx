@@ -7,6 +7,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { galleryApi } from "@/lib/admin/data-api";
 import type { GalleryImage } from "@/lib/admin/types";
 import { cn } from "@/lib/utils";
+import { resolveImageUrl } from "@/lib/image-url";
 
 const categories = ["All", "Food", "Drinks", "Hookah", "Ambiance", "Events", "Desserts"];
 
@@ -82,7 +83,7 @@ export function GalleryPageContent() {
             >
               <div className="relative aspect-[4/5] overflow-hidden">
                 <Image
-                  src={image.url}
+                  src={resolveImageUrl(image.url)}
                   alt={image.title}
                   fill
                   className="object-cover transition-transform duration-[1.2s] group-hover:scale-105"

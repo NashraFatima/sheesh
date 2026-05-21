@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { galleryCategoryOptions } from "@/lib/admin/form-options";
 import type { GalleryImage } from "@/lib/admin/types";
 import { galleryApi } from "@/lib/admin/data-api";
+import { resolveImageUrl } from "@/lib/image-url";
 
 export default function AdminGalleryPage() {
   const [images, setImages] = useState<GalleryImage[]>([]);
@@ -125,16 +126,16 @@ export default function AdminGalleryPage() {
             className="group glass-luxury overflow-hidden rounded-2xl"
           >
             <div className="relative aspect-square">
-              {img.url.startsWith("blob:") ? (
+              {resolveImageUrl(img.url).startsWith("blob:") ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={img.url}
+                  src={resolveImageUrl(img.url)}
                   alt={img.title}
                   className="h-full w-full object-cover"
                 />
               ) : (
                 <Image
-                  src={img.url}
+                  src={resolveImageUrl(img.url)}
                   alt={img.title}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -180,7 +181,7 @@ export default function AdminGalleryPage() {
           <div className="space-y-5">
             <ImageUploadField
               label="Replace Image"
-              initialPreview={editing.url}
+              initialPreview={resolveImageUrl(editing.url)}
               aspect="square"
               onFileChange={setEditFile}
             />

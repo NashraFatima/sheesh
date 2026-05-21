@@ -1,17 +1,11 @@
 export const ADMIN_TOKEN_COOKIE = "sheesh_admin_token";
 
-export const API_ORIGIN =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
-  "http://localhost:5000";
+import { API_ORIGIN, resolveImageUrl } from "@/lib/image-url";
 
 export const API_BASE_URL = `${API_ORIGIN}/api`;
 
-export function resolveApiAssetUrl(url: string) {
-  if (!url || url.startsWith("http://") || url.startsWith("https://") || url.startsWith("blob:")) {
-    return url;
-  }
-
-  return `${API_ORIGIN}${url.startsWith("/") ? url : `/${url}`}`;
+export function resolveApiAssetUrl(url?: string | null) {
+  return resolveImageUrl(url);
 }
 
 export interface AdminProfile {
