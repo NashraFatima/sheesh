@@ -1,26 +1,61 @@
 "use client";
 
-import { memo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { homeHash } from "@/lib/navigation";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 
-const HERO_VIDEO = "/videos/hero.mp4";
+const HERO_PLAYLIST = [
+  "/videos/hero.mp4",
+  "/videos/burger.mp4",
+  "/videos/grill.mp4",
+  "/videos/pizza.mp4",
+] as const;
 
 const HeroBackgroundVideo = memo(function HeroBackgroundVideo() {
+  const transitionTimerRef = useRef<number | null>(null);
+  const [videoIndex, setVideoIndex] = useState(0);
   const [ready, setReady] = useState(false);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (transitionTimerRef.current) {
+        window.clearTimeout(transitionTimerRef.current);
+      }
+    };
+  }, []);
+
+  const showVideo = useCallback(() => {
+    setReady(true);
+    setVisible(true);
+  }, []);
+
+  const playNextVideo = useCallback(() => {
+    setVisible(false);
+
+    if (transitionTimerRef.current) {
+      window.clearTimeout(transitionTimerRef.current);
+    }
+
+    transitionTimerRef.current = window.setTimeout(() => {
+      setReady(false);
+      setVideoIndex((current) => (current + 1) % HERO_PLAYLIST.length);
+    }, 450);
+  }, []);
 
   return (
     <video
-      src={HERO_VIDEO}
+      src={HERO_PLAYLIST[videoIndex]}
       autoPlay
       muted
-      loop
+      loop={false}
       playsInline
       preload="metadata"
-      onCanPlay={() => setReady(true)}
+      onCanPlay={showVideo}
+      onEnded={playNextVideo}
       className={`absolute inset-0 z-10 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
-        ready ? "opacity-60" : "opacity-0"
+        ready && visible ? "opacity-60" : "opacity-0"
       }`}
       style={{
         filter: "contrast(1.05) saturate(1.1)",
