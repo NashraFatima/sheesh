@@ -5,8 +5,10 @@ export const routes = {
   home: "/",
   menu: "/menu",
   events: "/events",
+  reservation: "/reservation",
   catering: "/catering",
   franchise: "/franchise",
+  gallery: "/gallery",
 } as const;
 
 /** Home page section anchors for smooth scroll */

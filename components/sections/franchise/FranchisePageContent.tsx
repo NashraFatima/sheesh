@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { inquiryApi } from "@/lib/admin/data-api";
 
 const stats = [
   { value: "$2.4M", label: "Avg Unit Revenue" },
@@ -34,8 +35,20 @@ const pillars = [
 export function FranchisePageContent() {
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    await inquiryApi.createFranchise({
+      name: `${form.get("firstName")} ${form.get("lastName")}`.trim(),
+      email: form.get("email"),
+      market: form.get("market"),
+      investment:
+        form.get("investment") ||
+        e.currentTarget.querySelector<HTMLInputElement>("#capital")?.value,
+      background:
+        form.get("background") ||
+        e.currentTarget.querySelector<HTMLTextAreaElement>("#experience")?.value,
+    });
     setSubmitted(true);
   };
 
@@ -102,20 +115,20 @@ export function FranchisePageContent() {
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="fname">First Name</Label>
-                    <Input id="fname" required />
+                    <Input id="fname" name="firstName" required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lname">Last Name</Label>
-                    <Input id="lname" required />
+                    <Input id="lname" name="lastName" required />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="femail">Email</Label>
-                  <Input id="femail" type="email" required />
+                  <Input id="femail" name="email" type="email" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="market">Target Market</Label>
-                  <Input id="market" placeholder="City, State" required />
+                  <Input id="market" name="market" placeholder="City, State" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="capital">Investment Range</Label>

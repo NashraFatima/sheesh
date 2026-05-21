@@ -9,12 +9,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { menuImages } from "@/lib/menu-images";
+import { inquiryApi } from "@/lib/admin/data-api";
 
 export function CateringPageContent() {
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    await inquiryApi.createCatering({
+      name: form.get("name"),
+      email: form.get("email"),
+      phone: form.get("phone"),
+      guests: Number(form.get("guests") || 0) || undefined,
+      eventDate: form.get("date"),
+      details: form.get("details"),
+    });
     setSubmitted(true);
   };
 

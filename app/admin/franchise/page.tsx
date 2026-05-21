@@ -1,13 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { mockFranchiseApps } from "@/lib/admin/mock-data";
+import { useEffect, useState } from "react";
 import type { AdminFranchiseApp } from "@/lib/admin/types";
 import { StatusChip } from "@/components/admin/ui/StatusChip";
 import { AdminModal } from "@/components/admin/ui/AdminModal";
+import { inquiryApi } from "@/lib/admin/data-api";
 
 export default function AdminFranchisePage() {
   const [selected, setSelected] = useState<AdminFranchiseApp | null>(null);
+  const [apps, setApps] = useState<AdminFranchiseApp[]>([]);
+
+  useEffect(() => {
+    inquiryApi.listFranchise().then(setApps).catch(() => setApps([]));
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -23,7 +28,7 @@ export default function AdminFranchisePage() {
             </tr>
           </thead>
           <tbody>
-            {mockFranchiseApps.map((app) => (
+            {apps.map((app) => (
               <tr key={app.id} className="border-b border-white/[0.04]">
                 <td className="px-4 py-3 text-white">{app.name}</td>
                 <td className="px-4 py-3 text-white/50">{app.market}</td>

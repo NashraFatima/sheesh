@@ -1,3 +1,4 @@
+import { PublicPageShell } from "@/components/layout/PublicPageShell";
 import { EventsPageContent } from "@/components/sections/events/EventsPageContent";
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function EventsPage() {
-  return <EventsPageContent />;
+  return (
+    <PublicPageShell>
+      <EventsPageContent />
+    </PublicPageShell>
+  );
 }

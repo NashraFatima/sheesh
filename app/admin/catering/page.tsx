@@ -1,15 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import { mockCateringInquiries } from "@/lib/admin/mock-data";
+import { useEffect, useState } from "react";
 import type { AdminInquiry } from "@/lib/admin/types";
 import { StatusChip } from "@/components/admin/ui/StatusChip";
 import { AdminModal } from "@/components/admin/ui/AdminModal";
 import { ImageUploadField } from "@/components/admin/ui/ImageUploadField";
 import { menuImages } from "@/lib/menu-images";
+import { inquiryApi } from "@/lib/admin/data-api";
 
 export default function AdminCateringPage() {
   const [selected, setSelected] = useState<AdminInquiry | null>(null);
+  const [inquiries, setInquiries] = useState<AdminInquiry[]>([]);
+
+  const loadInquiries = async () => setInquiries(await inquiryApi.listCatering());
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- loads server-backed admin table data on mount.
+    void loadInquiries();
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -41,7 +49,7 @@ export default function AdminCateringPage() {
             </tr>
           </thead>
           <tbody>
-            {mockCateringInquiries.map((row) => (
+            {inquiries.map((row) => (
               <tr key={row.id} className="border-b border-white/[0.04]">
                 <td className="px-4 py-3 text-white">{row.name}</td>
                 <td className="px-4 py-3 text-white/50">
@@ -86,6 +94,7 @@ export default function AdminCateringPage() {
               <button
                 type="button"
                 className="rounded-full bg-[#d4af37] px-5 py-2 text-xs text-[#050505]"
+                onClick={() => selected && void inquiryApi.updateCatering(selected.id, { status: "Contacted" }).then(loadInquiries)}
               >
                 Mark Contacted
               </button>

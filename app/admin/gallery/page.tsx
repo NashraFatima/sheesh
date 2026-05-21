@@ -1,39 +1,72 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Trash2 } from "lucide-react";
-import { mockGallery } from "@/lib/admin/mock-data";
+import { Pencil, Trash2 } from "lucide-react";
 import { ImageUploadField } from "@/components/admin/ui/ImageUploadField";
 import { AdminSelect } from "@/components/admin/ui/AdminSelect";
+import { AdminModal } from "@/components/admin/ui/AdminModal";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { galleryCategoryOptions } from "@/lib/admin/form-options";
 import type { GalleryImage } from "@/lib/admin/types";
+import { galleryApi } from "@/lib/admin/data-api";
 
 export default function AdminGalleryPage() {
-  const [images, setImages] = useState(mockGallery);
+  const [images, setImages] = useState<GalleryImage[]>([]);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Ambiance");
   const [pendingPreview, setPendingPreview] = useState<string | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [editing, setEditing] = useState<GalleryImage | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editCategory, setEditCategory] = useState("Ambiance");
+  const [editFile, setEditFile] = useState<File | null>(null);
   const [uploadKey, setUploadKey] = useState(0);
 
-  const addImage = () => {
+  const loadImages = async () => setImages(await galleryApi.list("?limit=100"));
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- loads server-backed gallery data on mount.
+    void loadImages();
+  }, []);
+
+  const addImage = async () => {
     if (!pendingPreview) return;
-    const newImage: GalleryImage = {
-      id: `g-${Date.now()}`,
-      url: pendingPreview,
-      title: title || "Untitled",
-      category,
-    };
-    setImages((prev) => [newImage, ...prev]);
+    const payload = new FormData();
+    payload.set("title", title || "Untitled");
+    payload.set("category", category);
+    if (pendingFile) payload.set("image", pendingFile);
+    else payload.set("url", pendingPreview);
+    await galleryApi.create(payload);
     setTitle("");
     setPendingPreview(null);
+    setPendingFile(null);
     setUploadKey((k) => k + 1);
+    await loadImages();
   };
 
-  const remove = (id: string) => {
-    setImages((prev) => prev.filter((i) => i.id !== id));
+  const openEdit = (image: GalleryImage) => {
+    setEditing(image);
+    setEditTitle(image.title);
+    setEditCategory(image.category);
+    setEditFile(null);
+  };
+
+  const updateImage = async () => {
+    if (!editing) return;
+    const payload = new FormData();
+    payload.set("title", editTitle || "Untitled");
+    payload.set("category", editCategory);
+    if (editFile) payload.set("image", editFile);
+    await galleryApi.update(editing.id, payload);
+    setEditing(null);
+    await loadImages();
+  };
+
+  const remove = async (id: string) => {
+    await galleryApi.remove(id);
+    await loadImages();
   };
 
   return (
@@ -52,6 +85,7 @@ export default function AdminGalleryPage() {
             label="Gallery Image"
             hint="Luxury lounge, food, or event photography"
             aspect="square"
+            onFileChange={setPendingFile}
             onPreviewChange={setPendingPreview}
           />
 
@@ -76,10 +110,10 @@ export default function AdminGalleryPage() {
           <button
             type="button"
             disabled={!pendingPreview}
-            onClick={addImage}
+            onClick={() => void addImage()}
             className="rounded-full bg-[#d4af37] px-6 py-2.5 text-sm font-medium text-[#050505] disabled:cursor-not-allowed disabled:opacity-40"
           >
-            Add to Gallery (UI only)
+            Add to Gallery
           </button>
         </div>
       </section>
@@ -108,14 +142,24 @@ export default function AdminGalleryPage() {
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-[#050505] to-transparent opacity-60" />
-              <button
-                type="button"
-                onClick={() => remove(img.id)}
-                className="absolute top-3 right-3 rounded-lg border border-white/10 bg-[#050505]/80 p-2 text-white/50 opacity-0 transition-opacity group-hover:opacity-100 hover:text-rose-400"
-                aria-label="Delete"
-              >
-                <Trash2 className="size-4" />
-              </button>
+              <div className="absolute top-3 right-3 flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+                <button
+                  type="button"
+                  onClick={() => openEdit(img)}
+                  className="rounded-lg border border-white/10 bg-[#050505]/80 p-2 text-white/50 hover:text-[#d4af37]"
+                  aria-label="Edit"
+                >
+                  <Pencil className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void remove(img.id)}
+                  className="rounded-lg border border-white/10 bg-[#050505]/80 p-2 text-white/50 hover:text-rose-400"
+                  aria-label="Delete"
+                >
+                  <Trash2 className="size-4" />
+                </button>
+              </div>
             </div>
             <div className="p-4">
               <p className="font-[family-name:var(--font-body)] text-sm text-white">
@@ -126,6 +170,53 @@ export default function AdminGalleryPage() {
           </div>
         ))}
       </div>
+
+      <AdminModal
+        open={!!editing}
+        onClose={() => setEditing(null)}
+        title="Edit Gallery Image"
+      >
+        {editing && (
+          <div className="space-y-5">
+            <ImageUploadField
+              label="Replace Image"
+              initialPreview={editing.url}
+              aspect="square"
+              onFileChange={setEditFile}
+            />
+            <div className="space-y-2">
+              <Label htmlFor="edit-gal-title">Title</Label>
+              <Input
+                id="edit-gal-title"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+              />
+            </div>
+            <AdminSelect
+              label="Category"
+              value={editCategory}
+              onChange={setEditCategory}
+              options={galleryCategoryOptions}
+            />
+            <div className="flex gap-3 border-t border-white/[0.06] pt-4">
+              <button
+                type="button"
+                onClick={() => void updateImage()}
+                className="rounded-full bg-[#d4af37] px-5 py-2 text-sm text-[#050505]"
+              >
+                Save Changes
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditing(null)}
+                className="rounded-full border border-white/15 px-5 py-2 text-sm text-white/60"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </AdminModal>
     </div>
   );
 }

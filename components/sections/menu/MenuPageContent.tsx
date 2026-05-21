@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
 import Image from "next/image";
@@ -8,13 +8,14 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { MenuItemCard } from "@/components/ui/MenuItemCard";
 import { Input } from "@/components/ui/input";
 import {
-  menuItems,
   menuCategories,
   foodSubcategories,
   hookahSubcategories,
   drinksSubcategories,
 } from "@/lib/menu-data";
 import type { MenuCategory } from "@/lib/menu/types";
+import type { MenuItem } from "@/lib/menu/types";
+import { menuApi } from "@/lib/admin/data-api";
 import { menuImages } from "@/lib/menu-images";
 import { cn } from "@/lib/utils";
 import { SmokeOverlay } from "@/components/effects/SmokeOverlay";
@@ -48,6 +49,28 @@ export function MenuPageContent() {
   const [category, setCategory] = useState<MenuCategory>("food");
   const [subFilter, setSubFilter] = useState("all");
   const [search, setSearch] = useState("");
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetches menu data from the backend on mount.
+    setLoading(true);
+    menuApi
+      .list("?limit=100&isAvailable=true")
+      .then((items) => {
+        if (mounted) setMenuItems(items);
+      })
+      .catch(() => {
+        if (mounted) setMenuItems([]);
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const subcategories =
     category === "food"
@@ -68,7 +91,7 @@ export function MenuPageContent() {
         item.description.toLowerCase().includes(search.toLowerCase());
       return matchCategory && matchSub && matchSearch;
     });
-  }, [category, subFilter, search]);
+  }, [menuItems, category, subFilter, search]);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden pt-24 pb-20 md:pt-28 md:pb-24">
@@ -161,7 +184,7 @@ export function MenuPageContent() {
         )}
 
         <p className="mt-6 text-center font-[family-name:var(--font-body)] text-sm text-white/35">
-          {filtered.length} {filtered.length === 1 ? "item" : "items"}
+          {loading ? "Loading menu..." : `${filtered.length} ${filtered.length === 1 ? "item" : "items"}`}
         </p>
 
         <motion.div
@@ -184,7 +207,7 @@ export function MenuPageContent() {
           </AnimatePresence>
         </motion.div>
 
-        {filtered.length === 0 && (
+        {!loading && filtered.length === 0 && (
           <p className="mt-16 text-center font-[family-name:var(--font-body)] text-white/40">
             No items match your search.
           </p>

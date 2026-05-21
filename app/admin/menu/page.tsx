@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
-import { menuItems, menuCategories } from "@/lib/menu-data";
+import { menuCategories } from "@/lib/menu-data";
 import { Input } from "@/components/ui/input";
 import { AdminModal } from "@/components/admin/ui/AdminModal";
 import { StatusChip } from "@/components/admin/ui/StatusChip";
@@ -11,6 +11,7 @@ import { MenuTagBadge } from "@/components/ui/MenuTagBadge";
 import { MenuItemForm } from "@/components/admin/menu/MenuItemForm";
 import type { MenuItem, MenuTag } from "@/lib/menu/types";
 import { cn } from "@/lib/utils";
+import { menuApi } from "@/lib/admin/data-api";
 
 export default function AdminMenuPage() {
   const [search, setSearch] = useState("");
@@ -18,6 +19,22 @@ export default function AdminMenuPage() {
   const [editItem, setEditItem] = useState<MenuItem | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadMenu = async () => {
+    setLoading(true);
+    try {
+      setMenuItems(await menuApi.list("?limit=100"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- loads server-backed admin table data on mount.
+    void loadMenu();
+  }, []);
 
   const filtered = useMemo(() => {
     return menuItems.filter((item) => {
@@ -28,11 +45,28 @@ export default function AdminMenuPage() {
         item.name.toLowerCase().includes(search.toLowerCase());
       return matchCat && matchSearch;
     });
-  }, [search, categoryFilter]);
+  }, [menuItems, search, categoryFilter]);
 
   const closeForm = () => {
     setAddOpen(false);
     setEditItem(null);
+  };
+
+  const saveItem = async (payload: Parameters<typeof menuApi.create>[0]) => {
+    if (editItem) {
+      await menuApi.update(editItem.id, payload);
+    } else {
+      await menuApi.create(payload);
+    }
+    closeForm();
+    await loadMenu();
+  };
+
+  const deleteItem = async () => {
+    if (!deleteId) return;
+    await menuApi.remove(deleteId);
+    setDeleteId(null);
+    await loadMenu();
   };
 
   return (
@@ -163,6 +197,7 @@ export default function AdminMenuPage() {
             ))}
           </tbody>
         </table>
+        {loading && <p className="px-4 py-4 text-center text-sm text-white/40">Loading menu...</p>}
         {filtered.length > 50 && (
           <p className="px-4 py-3 text-center text-xs text-white/35">
             Showing 50 of {filtered.length} items
@@ -180,7 +215,7 @@ export default function AdminMenuPage() {
           key={editItem?.id ?? "new"}
           item={editItem}
           onCancel={closeForm}
-          onSave={closeForm}
+          onSave={(payload) => void saveItem(payload)}
         />
       </AdminModal>
 
@@ -196,7 +231,7 @@ export default function AdminMenuPage() {
           <button
             type="button"
             className="rounded-full bg-rose-600/80 px-5 py-2 text-sm text-white"
-            onClick={() => setDeleteId(null)}
+            onClick={() => void deleteItem()}
           >
             Delete
           </button>

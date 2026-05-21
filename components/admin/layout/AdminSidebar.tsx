@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { adminNavItems } from "@/lib/admin/navigation";
 import { cn } from "@/lib/utils";
+import { useAdminAuth } from "@/contexts/AdminAuthContext";
 
 const icons: Record<string, React.ComponentType<{ className?: string }>> = {
   "layout-dashboard": LayoutDashboard,
@@ -36,6 +37,7 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ open, onClose, collapsed }: AdminSidebarProps) {
   const pathname = usePathname();
+  const { logout } = useAdminAuth();
 
   return (
     <>
@@ -85,13 +87,13 @@ export function AdminSidebar({ open, onClose, collapsed }: AdminSidebarProps) {
                 onClick={onClose}
                 title={collapsed ? item.label : undefined}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-300",
+                  "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-300",
                   active
-                    ? "bg-[#d4af37]/15 text-[#d4af37]"
+                    ? "bg-[#d4af37]/15 text-[#d4af37] shadow-[inset_0_1px_0_rgba(212,175,55,0.12)]"
                     : "text-white/50 hover:bg-white/[0.04] hover:text-white"
                 )}
               >
-                {Icon && <Icon className="size-4 shrink-0" />}
+                {Icon && <Icon className="size-4 shrink-0 transition-transform duration-300 group-hover:scale-105" />}
                 {!collapsed && (
                   <span className="font-[family-name:var(--font-body)] text-xs tracking-wide">
                     {item.label}
@@ -103,10 +105,11 @@ export function AdminSidebar({ open, onClose, collapsed }: AdminSidebarProps) {
         </nav>
 
         <div className="border-t border-white/[0.06] p-3">
-          <Link
-            href="/"
+          <button
+            type="button"
+            onClick={() => void logout()}
             className={cn(
-              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-white/40 transition-colors hover:bg-white/[0.04] hover:text-white"
+              "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-white/40 transition-colors hover:bg-white/[0.04] hover:text-rose-200"
             )}
           >
             <LogOut className="size-4 shrink-0" />
@@ -115,7 +118,7 @@ export function AdminSidebar({ open, onClose, collapsed }: AdminSidebarProps) {
                 Logout
               </span>
             )}
-          </Link>
+          </button>
         </div>
       </aside>
     </>

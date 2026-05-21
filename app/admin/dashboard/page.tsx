@@ -1,24 +1,33 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { AdminStatCard } from "@/components/admin/ui/AdminStatCard";
 import { StatusChip } from "@/components/admin/ui/StatusChip";
-import { activityFeed, dashboardStats } from "@/lib/admin/mock-data";
-import { menuItems } from "@/lib/menu-data";
-import { useReservations } from "@/components/providers/ReservationProvider";
+import { dashboardApi } from "@/lib/admin/data-api";
+import type { AdminReservation } from "@/lib/admin/types";
 
 export default function AdminDashboardPage() {
-  const { reservations } = useReservations();
-  const pendingBookings = reservations.filter((reservation) => reservation.status === "Pending").length;
-  const stats = {
-    ...dashboardStats,
-    reservations: reservations.length,
-    pendingBookings,
-    menuItems: menuItems.length,
+  const [data, setData] = useState<Awaited<ReturnType<typeof dashboardApi.get>> | null>(null);
+
+  useEffect(() => {
+    dashboardApi.get().then(setData).catch(() => setData(null));
+  }, []);
+
+  const stats = data?.stats ?? {
+    reservations: 0,
+    pendingBookings: 0,
+    cateringInquiries: 0,
+    franchiseApplications: 0,
+    menuItems: 0,
+    upcomingEvents: 0,
+    confirmedReservations: 0,
   };
+  const reservations: AdminReservation[] = data?.recentReservations ?? [];
+  const activityFeed = data?.activityFeed ?? [];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 lg:space-y-8">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
         <AdminStatCard label="Reservations" value={stats.reservations} change="+12% this week" accent />
         <AdminStatCard label="Pending Bookings" value={stats.pendingBookings} change="Needs review" />
@@ -28,12 +37,12 @@ export default function AdminDashboardPage() {
         <AdminStatCard label="Upcoming Events" value={stats.upcomingEvents} />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="group/card glass-luxury relative overflow-hidden rounded-2xl p-6 lg:col-span-2 bg-[#141418]/60 transition-all duration-700 hover:border-[#d4af37]/20">
+      <div className="grid gap-5 lg:grid-cols-3 lg:gap-6">
+        <div className="group/card glass-luxury relative overflow-hidden rounded-2xl bg-[#111114]/72 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.26)] transition-all duration-700 hover:border-[#d4af37]/20 hover:bg-[#151518]/80 md:p-6 lg:col-span-2">
           {/* Inner hairline */}
           <div className="absolute inset-4 border border-white/5 pointer-events-none rounded-xl transition-colors duration-700 group-hover/card:border-[#d4af37]/10" />
 
-          <div className="flex items-center justify-between relative z-10">
+          <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="font-[family-name:var(--font-display)] text-xl text-white">
                 Booking Overview
@@ -42,13 +51,13 @@ export default function AdminDashboardPage() {
                 Weekly reservation velocity and engagement
               </p>
             </div>
-            <div className="flex items-center gap-2 rounded-full border border-white/5 bg-white/[0.02] px-3 py-1 font-[family-name:var(--font-accent)] text-[8px] tracking-widest text-[#d4af37] uppercase">
+            <div className="flex w-fit items-center gap-2 rounded-full border border-[#d4af37]/15 bg-[#d4af37]/[0.055] px-3 py-1 font-[family-name:var(--font-accent)] text-[8px] tracking-widest text-[#d4af37] uppercase">
               <span className="inline-block size-1.5 rounded-full bg-emerald-500 animate-pulse" />
               LIVE REPORTING
             </div>
           </div>
 
-          <div className="relative mt-8 h-56 w-full z-10">
+          <div className="relative z-10 mt-8 h-64 w-full">
             {/* Horizontal Gridlines */}
             <div className="absolute inset-x-0 top-0 border-b border-white/[0.03] text-[8px] tracking-wider text-white/20 font-mono pt-1">100%</div>
             <div className="absolute inset-x-0 top-[25%] border-b border-white/[0.03] text-[8px] tracking-wider text-white/20 font-mono pt-1">75%</div>
@@ -67,7 +76,7 @@ export default function AdminDashboardPage() {
                   
                   {/* The bar element */}
                   <div
-                    className="w-full max-w-[28px] rounded-t-[3px] bg-gradient-to-t from-[#8b6914]/20 via-[#d4af37]/60 to-[#d4af37] transition-all duration-500 shadow-[0_0_12px_rgba(212,175,55,0.1)] group-hover/bar:shadow-[0_0_24px_rgba(212,175,55,0.3)] group-hover/bar:scale-x-105"
+                    className="w-full max-w-[30px] rounded-t-[4px] bg-gradient-to-t from-[#8b6914]/20 via-[#d4af37]/60 to-[#f4d977] shadow-[0_0_12px_rgba(212,175,55,0.1)] transition-all duration-500 group-hover/bar:scale-x-105 group-hover/bar:shadow-[0_0_24px_rgba(212,175,55,0.3)]"
                     style={{ height: `${h * 0.68}%` }}
                   />
                   
@@ -81,7 +90,7 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="group/card glass-luxury relative overflow-hidden rounded-2xl p-6 bg-[#141418]/60 transition-all duration-700 hover:border-[#d4af37]/20">
+        <div className="group/card glass-luxury relative overflow-hidden rounded-2xl bg-[#111114]/72 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.22)] transition-all duration-700 hover:border-[#d4af37]/20 hover:bg-[#151518]/80 md:p-6">
           {/* Inner hairline */}
           <div className="absolute inset-4 border border-white/5 pointer-events-none rounded-xl transition-colors duration-700 group-hover/card:border-[#d4af37]/10" />
 
@@ -109,8 +118,8 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="group/card glass-luxury relative overflow-hidden rounded-2xl bg-[#141418]/60 transition-all duration-700 hover:border-[#d4af37]/20">
+      <div className="grid gap-5 lg:grid-cols-2 lg:gap-6">
+        <div className="group/card glass-luxury relative overflow-hidden rounded-2xl bg-[#111114]/72 shadow-[0_18px_60px_rgba(0,0,0,0.22)] transition-all duration-700 hover:border-[#d4af37]/20 hover:bg-[#151518]/80">
           {/* Inner hairline */}
           <div className="absolute inset-4 border border-white/5 pointer-events-none rounded-xl transition-colors duration-700 group-hover/card:border-[#d4af37]/10" />
 
@@ -129,7 +138,7 @@ export default function AdminDashboardPage() {
             {reservations.slice(0, 4).map((r) => (
               <div
                 key={r.id}
-                className="group/row flex items-center justify-between gap-4 px-6 py-4 transition-colors duration-300 hover:bg-white/[0.01]"
+                className="group/row flex flex-col gap-3 px-5 py-4 transition-colors duration-300 hover:bg-white/[0.02] sm:flex-row sm:items-center sm:justify-between sm:px-6"
               >
                 <div>
                   <p className="font-[family-name:var(--font-body)] text-sm text-white group-hover/row:text-[#d4af37] transition-colors duration-300">
@@ -145,14 +154,14 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="group/card glass-luxury relative overflow-hidden rounded-2xl p-6 bg-[#141418]/60 transition-all duration-700 hover:border-[#d4af37]/20">
+        <div className="group/card glass-luxury relative overflow-hidden rounded-2xl bg-[#111114]/72 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.22)] transition-all duration-700 hover:border-[#d4af37]/20 hover:bg-[#151518]/80 md:p-6">
           {/* Inner hairline */}
           <div className="absolute inset-4 border border-white/5 pointer-events-none rounded-xl transition-colors duration-700 group-hover/card:border-[#d4af37]/10" />
 
           <h2 className="font-[family-name:var(--font-display)] text-lg text-white relative z-10">
             Analytics Snapshot
           </h2>
-          <div className="mt-6 grid grid-cols-2 gap-4 relative z-10">
+          <div className="relative z-10 mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {[
               { label: "Avg Party Size", value: "4.2" },
               { label: "Peak Hour", value: "9 PM" },
@@ -161,7 +170,7 @@ export default function AdminDashboardPage() {
             ].map((m) => (
               <div
                 key={m.label}
-                className="group/metric rounded-xl border border-white/[0.06] bg-[#0c0c0e]/60 p-4 transition-all duration-500 hover:border-[#d4af37]/25 hover:shadow-[0_4px_24px_rgba(212,175,55,0.04)]"
+                className="group/metric rounded-xl border border-white/[0.06] bg-[#0c0c0e]/70 p-4 transition-all duration-500 hover:border-[#d4af37]/25 hover:bg-[#111114] hover:shadow-[0_4px_24px_rgba(212,175,55,0.04)]"
               >
                 <p className="text-[10px] tracking-wide text-white/40 uppercase group-hover/metric:text-white/60 transition-colors duration-300">
                   {m.label}

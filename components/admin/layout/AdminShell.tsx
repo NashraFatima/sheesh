@@ -30,7 +30,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-[#050505]">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(212,175,55,0.06),transparent_50%)]" />
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(212,175,55,0.08),transparent_42%),radial-gradient(ellipse_at_bottom_left,rgba(255,255,255,0.035),transparent_34%)]" />
       <div className="film-grain pointer-events-none fixed inset-0 opacity-50" />
       <AdminSidebar
         open={sidebarOpen}

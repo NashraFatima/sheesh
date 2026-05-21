@@ -17,7 +17,18 @@ import { cn } from "@/lib/utils";
 interface MenuItemFormProps {
   item?: MenuItem | null;
   onCancel: () => void;
-  onSave?: () => void;
+  onSave?: (payload: {
+    title: string;
+    description: string;
+    category: MenuCategory;
+    subcategory: string;
+    price: number;
+    image: string;
+    tags: MenuTag[];
+    featured: boolean;
+    layout: "default" | "wide";
+    isAvailable: boolean;
+  }) => void;
 }
 
 export function MenuItemForm({ item, onCancel, onSave }: MenuItemFormProps) {
@@ -60,7 +71,19 @@ export function MenuItemForm({ item, onCancel, onSave }: MenuItemFormProps) {
       className="space-y-5"
       onSubmit={(e) => {
         e.preventDefault();
-        onSave?.();
+        const form = new FormData(e.currentTarget);
+        onSave?.({
+          title: String(form.get("title") || ""),
+          description: String(form.get("description") || ""),
+          category,
+          subcategory,
+          price: Number(form.get("price") || 0),
+          image: item?.image || String(form.get("image") || "https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg"),
+          tags: selectedTags,
+          featured: Boolean(form.get("featured")),
+          layout: Boolean(form.get("featured")) ? "wide" : "default",
+          isAvailable: true,
+        });
       }}
     >
       <ImageUploadField
@@ -75,6 +98,7 @@ export function MenuItemForm({ item, onCancel, onSave }: MenuItemFormProps) {
           <Label htmlFor="menu-name">Name</Label>
           <Input
             id="menu-name"
+            name="title"
             defaultValue={item?.name}
             placeholder="Item name"
             required
@@ -84,6 +108,7 @@ export function MenuItemForm({ item, onCancel, onSave }: MenuItemFormProps) {
           <Label htmlFor="menu-price">Price ($)</Label>
           <Input
             id="menu-price"
+            name="price"
             type="number"
             min={0}
             step={0.01}
@@ -137,6 +162,7 @@ export function MenuItemForm({ item, onCancel, onSave }: MenuItemFormProps) {
         <Label htmlFor="menu-desc">Description</Label>
         <Textarea
           id="menu-desc"
+          name="description"
           defaultValue={item?.description}
           rows={3}
           placeholder="Premium description..."
@@ -144,12 +170,23 @@ export function MenuItemForm({ item, onCancel, onSave }: MenuItemFormProps) {
         />
       </div>
 
+      <input type="hidden" name="image" value={item?.image ?? ""} />
+      <label className="inline-flex items-center gap-3 text-sm text-white/55">
+        <input
+          type="checkbox"
+          name="featured"
+          defaultChecked={item?.featured}
+          className="size-4 accent-[#d4af37]"
+        />
+        Feature this item
+      </label>
+
       <div className="flex flex-wrap gap-3 border-t border-white/[0.06] pt-4">
         <button
           type="submit"
           className="rounded-full bg-[#d4af37] px-6 py-2.5 text-sm font-medium text-[#050505] transition-shadow hover:shadow-[0_0_24px_rgba(212,175,55,0.35)]"
         >
-          Save Item (UI only)
+          Save Item
         </button>
         <button
           type="button"

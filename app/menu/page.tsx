@@ -1,3 +1,4 @@
+import { PublicPageShell } from "@/components/layout/PublicPageShell";
 import { MenuPageContent } from "@/components/sections/menu/MenuPageContent";
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function MenuPage() {
-  return <MenuPageContent />;
+  return (
+    <PublicPageShell>
+      <MenuPageContent />
+    </PublicPageShell>
+  );
 }

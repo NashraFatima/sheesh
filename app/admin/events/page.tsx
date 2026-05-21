@@ -1,20 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Plus, Pencil, Trash2 } from "lucide-react";
-import { mockEvents } from "@/lib/admin/mock-data";
 import { AdminModal } from "@/components/admin/ui/AdminModal";
 import { StatusChip } from "@/components/admin/ui/StatusChip";
 import { EventForm } from "@/components/admin/events/EventForm";
 import { ImageUploadField } from "@/components/admin/ui/ImageUploadField";
 import { menuImages } from "@/lib/menu-images";
 import type { AdminEvent } from "@/lib/admin/types";
+import { eventApi } from "@/lib/admin/data-api";
 
 export default function AdminEventsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<AdminEvent | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [events, setEvents] = useState<AdminEvent[]>([]);
+
+  const loadEvents = async () => setEvents(await eventApi.list("?limit=100"));
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- loads server-backed admin table data on mount.
+    void loadEvents();
+  }, []);
 
   const openCreate = () => {
     setEditing(null);
@@ -29,6 +37,20 @@ export default function AdminEventsPage() {
   const closeModal = () => {
     setModalOpen(false);
     setEditing(null);
+  };
+
+  const saveEvent = async (payload: Parameters<typeof eventApi.create>[0]) => {
+    if (editing) await eventApi.update(editing.id, payload);
+    else await eventApi.create(payload);
+    closeModal();
+    await loadEvents();
+  };
+
+  const deleteEvent = async () => {
+    if (!deleteId) return;
+    await eventApi.remove(deleteId);
+    setDeleteId(null);
+    await loadEvents();
   };
 
   return (
@@ -61,7 +83,7 @@ export default function AdminEventsPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {mockEvents.map((event) => (
+        {events.map((event) => (
           <div
             key={event.id}
             className="glass-luxury group overflow-hidden rounded-2xl transition-shadow hover:shadow-[0_0_32px_rgba(212,175,55,0.08)]"
@@ -119,7 +141,7 @@ export default function AdminEventsPage() {
             </tr>
           </thead>
           <tbody>
-            {mockEvents.map((e) => (
+            {events.map((e) => (
               <tr key={e.id} className="border-b border-white/[0.04]">
                 <td className="px-4 py-3 text-white">{e.title}</td>
                 <td className="px-4 py-3 text-white/50">{e.date}</td>
@@ -151,7 +173,7 @@ export default function AdminEventsPage() {
           key={editing?.id ?? "new"}
           event={editing}
           onCancel={closeModal}
-          onSave={closeModal}
+          onSave={(payload) => void saveEvent(payload)}
         />
       </AdminModal>
 
@@ -164,7 +186,7 @@ export default function AdminEventsPage() {
         <button
           type="button"
           className="mt-4 rounded-full bg-rose-600/80 px-5 py-2 text-sm text-white"
-          onClick={() => setDeleteId(null)}
+          onClick={() => void deleteEvent()}
         >
           Delete
         </button>

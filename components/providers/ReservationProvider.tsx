@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { ReservationModal } from "@/components/reservations/ReservationModal";
-import { mockReservations } from "@/lib/admin/mock-data";
+import { reservationApi } from "@/lib/admin/data-api";
 import type { AdminReservation, ReservationStatus } from "@/lib/admin/types";
 
 interface NewReservationPayload {
@@ -17,8 +17,11 @@ interface NewReservationPayload {
 
 interface ReservationContextValue {
   reservations: AdminReservation[];
-  addReservation: (payload: NewReservationPayload) => void;
-  updateReservationStatus: (id: string, status: ReservationStatus) => void;
+  loading: boolean;
+  error: string | null;
+  refreshReservations: () => Promise<void>;
+  addReservation: (payload: NewReservationPayload) => Promise<void>;
+  updateReservationStatus: (id: string, status: ReservationStatus) => Promise<void>;
   openModal: () => void;
   closeModal: () => void;
   isModalOpen: boolean;
@@ -26,73 +29,71 @@ interface ReservationContextValue {
 
 const ReservationContext = createContext<ReservationContextValue | null>(null);
 
-const STORAGE_KEY = "sheesh-reservations";
+const statusToApi: Record<ReservationStatus, string> = {
+  Pending: "pending",
+  Approved: "confirmed",
+  Rejected: "cancelled",
+};
 
-function getInitialReservations(): AdminReservation[] {
-  if (typeof window === "undefined") {
-    return mockReservations;
-  }
-
-  try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      return JSON.parse(stored) as AdminReservation[];
-    }
-  } catch {
-    // ignore invalid stored data
-  }
-
-  return mockReservations;
-}
-
-export function ReservationProvider({ children }: { children: React.ReactNode }) {
-  const [reservations, setReservations] = useState<AdminReservation[]>(() => getInitialReservations());
+export function ReservationProvider({
+  children,
+  loadOnMount = false,
+}: {
+  children: React.ReactNode;
+  loadOnMount?: boolean;
+}) {
+  const [reservations, setReservations] = useState<AdminReservation[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const refreshReservations = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      setReservations(await reservationApi.list("?limit=100"));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to load reservations.");
+      setReservations([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(reservations));
-    } catch {
-      // ignore storage errors
+    if (!loadOnMount) {
+      setLoading(false);
+      return;
     }
-  }, [reservations]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- synchronizes reservations from the backend.
+    void refreshReservations();
+  }, [loadOnMount, refreshReservations]);
 
-  const addReservation = (payload: NewReservationPayload) => {
-    const newReservation: AdminReservation = {
-      id: typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-        ? crypto.randomUUID()
-        : `res-${Date.now()}`,
-      guestName: payload.guestName,
-      email: payload.email,
-      phone: payload.phone,
-      partySize: payload.partySize,
-      date: payload.date,
-      time: payload.time,
-      notes: payload.notes,
-      status: "Pending",
-      createdAt: new Date().toISOString().split("T")[0],
-    };
-
-    setReservations((prev) => [newReservation, ...prev]);
+  const addReservation = async (payload: NewReservationPayload) => {
+    const reservation = await reservationApi.create(payload);
+    setReservations((prev) => [reservation, ...prev]);
   };
 
-  const updateReservationStatus = (id: string, status: ReservationStatus) => {
-    setReservations((prev) => prev.map((reservation) =>
-      reservation.id === id ? { ...reservation, status } : reservation
-    ));
+  const updateReservationStatus = async (id: string, status: ReservationStatus) => {
+    const updated = await reservationApi.update(id, { status: statusToApi[status] });
+    setReservations((prev) =>
+      prev.map((reservation) => (reservation.id === id ? updated : reservation))
+    );
   };
 
   const value = useMemo(
     () => ({
       reservations,
+      loading,
+      error,
+      refreshReservations,
       addReservation,
       updateReservationStatus,
       openModal: () => setIsModalOpen(true),
       closeModal: () => setIsModalOpen(false),
       isModalOpen,
     }),
-    [reservations, isModalOpen]
+    [reservations, loading, error, refreshReservations, isModalOpen]
   );
 
   return (

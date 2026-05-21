@@ -3,12 +3,31 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { MenuTagBadge } from "@/components/ui/MenuTagBadge";
-import { featuredMenuItems } from "@/lib/menu-data";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { menuApi } from "@/lib/admin/data-api";
+import type { MenuItem } from "@/lib/menu/types";
 
 export function FeaturedMenuSection() {
+  const [featuredMenuItems, setFeaturedMenuItems] = useState<MenuItem[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    menuApi
+      .list("?featured=true&isAvailable=true&limit=5")
+      .then((items) => {
+        if (mounted) setFeaturedMenuItems(items);
+      })
+      .catch(() => {
+        if (mounted) setFeaturedMenuItems([]);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const [hero, ...rest] = featuredMenuItems;
 
   return (

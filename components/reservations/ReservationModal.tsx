@@ -17,7 +17,7 @@ interface ReservationModalProps {
     date: string;
     time: string;
     notes?: string;
-  }) => void;
+  }) => void | Promise<void>;
 }
 
 const defaultFormState = {
@@ -34,6 +34,7 @@ export function ReservationModal({ open, onClose, onConfirm }: ReservationModalP
   const [form, setForm] = useState(defaultFormState);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
 
   const minDate = useMemo(() => {
@@ -48,7 +49,7 @@ export function ReservationModal({ open, onClose, onConfirm }: ReservationModalP
     }));
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const { guestName, email, phone, partySize, date, time } = form;
 
@@ -57,8 +58,15 @@ export function ReservationModal({ open, onClose, onConfirm }: ReservationModalP
       return;
     }
 
-    onConfirm(form);
-    setSubmitted(true);
+    setSubmitting(true);
+    try {
+      await onConfirm(form);
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to submit reservation.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -219,9 +227,10 @@ export function ReservationModal({ open, onClose, onConfirm }: ReservationModalP
 
                     <button
                       type="submit"
+                      disabled={submitting}
                       className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-[#8b6914] via-[#d4af37] to-[#8b6914] px-6 py-3 text-sm font-semibold uppercase tracking-[0.15em] text-[#050505] transition hover:brightness-95"
                     >
-                      Request reservation
+                      {submitting ? "Sending..." : "Request reservation"}
                     </button>
                   </form>
                 )}

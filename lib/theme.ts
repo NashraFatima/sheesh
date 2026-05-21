@@ -18,6 +18,8 @@ export const navLinks = [
   { href: "/", label: "Home" },
   { href: "/menu", label: "Menu" },
   { href: "/events", label: "Events" },
+  { href: "/reservation", label: "Reservations" },
   { href: "/catering", label: "Catering" },
   { href: "/franchise", label: "Franchise" },
+  { href: "/gallery", label: "Gallery" },
 ] as const;

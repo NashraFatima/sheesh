@@ -11,7 +11,15 @@ import type { AdminEvent } from "@/lib/admin/types";
 interface EventFormProps {
   event?: AdminEvent | null;
   onCancel: () => void;
-  onSave?: () => void;
+  onSave?: (payload: {
+    title: string;
+    date: string;
+    time: string;
+    location: string;
+    status: string;
+    image: string;
+    featured: boolean;
+  }) => void;
 }
 
 export function EventForm({ event, onCancel, onSave }: EventFormProps) {
@@ -22,7 +30,16 @@ export function EventForm({ event, onCancel, onSave }: EventFormProps) {
       className="space-y-5"
       onSubmit={(e) => {
         e.preventDefault();
-        onSave?.();
+        const form = new FormData(e.currentTarget);
+        onSave?.({
+          title: String(form.get("title") || ""),
+          date: String(form.get("date") || ""),
+          time: String(form.get("time") || ""),
+          location: String(form.get("location") || ""),
+          status,
+          image: event?.image || "https://images.pexels.com/photos/2747449/pexels-photo-2747449.jpeg",
+          featured: Boolean(form.get("featured")),
+        });
       }}
     >
       <ImageUploadField
@@ -36,6 +53,7 @@ export function EventForm({ event, onCancel, onSave }: EventFormProps) {
         <Label htmlFor="event-title">Title</Label>
         <Input
           id="event-title"
+          name="title"
           defaultValue={event?.title}
           placeholder="Event title"
           required
@@ -47,6 +65,7 @@ export function EventForm({ event, onCancel, onSave }: EventFormProps) {
           <Label htmlFor="event-date">Date</Label>
           <Input
             id="event-date"
+            name="date"
             type="date"
             defaultValue={event?.date}
             required
@@ -56,6 +75,7 @@ export function EventForm({ event, onCancel, onSave }: EventFormProps) {
           <Label htmlFor="event-time">Time</Label>
           <Input
             id="event-time"
+            name="time"
             defaultValue={event?.time}
             placeholder="8:00 PM"
             required
@@ -67,6 +87,7 @@ export function EventForm({ event, onCancel, onSave }: EventFormProps) {
         <Label htmlFor="event-location">Location</Label>
         <Input
           id="event-location"
+          name="location"
           defaultValue={event?.location}
           placeholder="Sheesh Main Lounge"
           required
@@ -81,12 +102,22 @@ export function EventForm({ event, onCancel, onSave }: EventFormProps) {
         placeholder="Select status"
       />
 
+      <label className="inline-flex items-center gap-3 text-sm text-white/55">
+        <input
+          type="checkbox"
+          name="featured"
+          defaultChecked={event?.featured}
+          className="size-4 accent-[#d4af37]"
+        />
+        Featured event
+      </label>
+
       <div className="flex flex-wrap gap-3 border-t border-white/[0.06] pt-4">
         <button
           type="submit"
           className="rounded-full bg-[#d4af37] px-6 py-2.5 text-sm font-medium text-[#050505]"
         >
-          Save Event (UI only)
+          Save Event
         </button>
         <button
           type="button"

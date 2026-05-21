@@ -2,14 +2,18 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { CountdownTimer } from "@/components/sections/events/CountdownTimer";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { menuImages } from "@/lib/menu-images";
 import { SmokeOverlay } from "@/components/effects/SmokeOverlay";
+import { eventApi } from "@/lib/admin/data-api";
+import type { AdminEvent } from "@/lib/admin/types";
 
-const events = [
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const unusedLegacyEvents = [
   {
     title: "Live DJ Fridays",
     date: "Every Friday · 10PM",
@@ -31,6 +35,19 @@ const events = [
 ];
 
 export function EventsPageContent() {
+  const [events, setEvents] = useState<AdminEvent[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    eventApi
+      .list("?status=Published&limit=20")
+      .then((items) => mounted && setEvents(items))
+      .catch(() => mounted && setEvents([]));
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <div className="relative min-h-screen">
       <section className="relative flex min-h-[85vh] items-center overflow-hidden pt-28">
@@ -109,13 +126,13 @@ export function EventsPageContent() {
                 </div>
                 <GlassCard delay={i * 0.1} hover={false} className="rounded-none border-0 border-t border-white/[0.06]">
                   <p className="font-[family-name:var(--font-accent)] text-[10px] tracking-[0.25em] text-[#d4af37] uppercase">
-                    {event.date}
+                    {event.date} {event.time ? `Â· ${event.time}` : ""}
                   </p>
                   <h3 className="mt-3 font-[family-name:var(--font-display)] text-2xl text-white">
                     {event.title}
                   </h3>
                   <p className="mt-3 font-[family-name:var(--font-body)] text-sm text-white/50">
-                    {event.desc}
+                    {event.description || event.location}
                   </p>
                 </GlassCard>
               </div>
