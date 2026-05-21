@@ -3,27 +3,20 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+const LOADER_SEEN_KEY = "sheesh-loader-seen";
+
 export function LoadingScreen() {
-  const [loading, setLoading] = useState(true);
-  const [progress, setProgress] = useState(0);
+  const [loading, setLoading] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return window.sessionStorage.getItem(LOADER_SEEN_KEY) !== "true";
+  });
 
   useEffect(() => {
-    const duration = 2200;
-    const start = performance.now();
-
-    const tick = (now: number) => {
-      const elapsed = now - start;
-      const p = Math.min(100, (elapsed / duration) * 100);
-      setProgress(p);
-      if (elapsed < duration) {
-        requestAnimationFrame(tick);
-      } else {
-        setTimeout(() => setLoading(false), 400);
-      }
-    };
-
-    requestAnimationFrame(tick);
-  }, []);
+    if (!loading) return;
+    const timer = window.setTimeout(() => setLoading(false), 1200);
+    window.sessionStorage.setItem(LOADER_SEEN_KEY, "true");
+    return () => window.clearTimeout(timer);
+  }, [loading]);
 
   return (
     <AnimatePresence>
@@ -52,11 +45,13 @@ export function LoadingScreen() {
             <div className="h-px w-full overflow-hidden bg-white/10">
               <motion.div
                 className="h-full bg-gradient-to-r from-transparent via-[#d4af37] to-transparent"
-                style={{ width: `${progress}%` }}
+                initial={{ width: "0%" }}
+                animate={{ width: "100%" }}
+                transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
               />
             </div>
             <p className="mt-3 text-center font-[family-name:var(--font-body)] text-[10px] tracking-[0.3em] text-white/40 uppercase">
-              {Math.round(progress)}%
+              Loading
             </p>
           </div>
         </motion.div>

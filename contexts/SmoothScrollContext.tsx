@@ -61,15 +61,16 @@ export function SmoothScrollProvider({
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
+    const isCoarse = window.matchMedia("(pointer: coarse)").matches;
     if (prefersReduced) return;
 
     registerScrollTrigger();
 
     const lenis = new Lenis({
-      duration: 1.15,
+      duration: isCoarse ? 0.85 : 1.05,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
-      smoothWheel: true,
+      smoothWheel: !isCoarse,
       touchMultiplier: 1.2,
     });
 

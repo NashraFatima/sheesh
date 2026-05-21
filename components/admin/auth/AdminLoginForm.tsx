@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -24,7 +24,7 @@ type ToastState = {
 export function AdminLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login } = useAdminAuth();
+  const { login, status } = useAdminAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(true);
@@ -35,10 +35,18 @@ export function AdminLoginForm() {
 
   const nextPath = useMemo(() => {
     const next = searchParams.get("next");
-    return next?.startsWith("/admin") && next !== "/admin/login"
+    return next?.startsWith("/admin") &&
+      next !== "/admin" &&
+      next !== "/admin/login"
       ? next
-      : "/admin";
+      : "/admin/dashboard";
   }, [searchParams]);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace(nextPath);
+    }
+  }, [nextPath, router, status]);
 
   const showToast = (nextToast: ToastState) => {
     setToast(nextToast);

@@ -1,57 +1,36 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { memo, useRef, useState } from "react";
 import Link from "next/link";
 import { homeHash } from "@/lib/navigation";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 
-const VIDEO_SEQUENCE = [
-  "/videos/hero.mp4",
-  "/videos/grill.mp4",
-  "/videos/burger.mp4",
-  "/videos/pizza.mp4",
-];
+const HERO_VIDEO = "/videos/hero.mp4";
+
+const HeroBackgroundVideo = memo(function HeroBackgroundVideo() {
+  const [ready, setReady] = useState(false);
+
+  return (
+    <video
+      src={HERO_VIDEO}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      onCanPlay={() => setReady(true)}
+      className={`absolute inset-0 z-10 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
+        ready ? "opacity-60" : "opacity-0"
+      }`}
+      style={{
+        filter: "contrast(1.05) saturate(1.1)",
+      }}
+    />
+  );
+});
 
 export function HeroSection() {
   const heroRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isFading, setIsFading] = useState(false);
-
-  const handleVideoEnded = () => {
-    // 1. Start smooth fade out to black
-    setIsFading(true);
-    
-    // 2. Wait for fade out, then switch video source
-    setTimeout(() => {
-      setCurrentIndex((prev) => (prev + 1) % VIDEO_SEQUENCE.length);
-    }, 700); // 700ms fade duration
-  };
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (video) {
-      // 3. When src changes, explicitly load and play the new video
-      video.load();
-      
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            // 4. Once it is actively playing, fade it back in smoothly
-            setIsFading(false);
-          })
-          .catch((err) => {
-            console.error("Video playback failed", err);
-            // Fallback: make sure it becomes visible even if autoplay is restricted
-            setIsFading(false);
-          });
-      } else {
-        setIsFading(false);
-      }
-    }
-  }, [currentIndex]);
 
   return (
     <section
@@ -60,21 +39,7 @@ export function HeroSection() {
     >
       {/* 1. PREMIUM SINGLE VIDEO LAYER */}
       <div className="absolute inset-0 z-0 bg-black">
-        <video
-          ref={videoRef}
-          src={VIDEO_SEQUENCE[currentIndex]}
-          autoPlay
-          muted
-          playsInline
-          preload="auto"
-          onEnded={handleVideoEnded}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out z-10 ${
-            isFading ? "opacity-0" : "opacity-60"
-          }`}
-          style={{ 
-            filter: "contrast(1.05) saturate(1.1)",
-          }}
-        />
+        <HeroBackgroundVideo />
         
         {/* Clean, lightweight vignette and gradient overlay for text readability */}
         <div className="absolute inset-0 z-20 bg-gradient-to-b from-black/50 via-transparent to-[#050505] pointer-events-none" />
