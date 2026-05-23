@@ -8,7 +8,7 @@ const ADMIN_BASE = `/${ADMIN_SLUG}/admin`;
 const CUSTOMER_AUTH_ROUTES = ["/login", "/signup"];
 const CUSTOMER_PROTECTED   = ["/account", "/reservations/my"];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   /* ── Block direct /admin/* access — only the slug URL is public ── */
