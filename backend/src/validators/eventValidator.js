@@ -9,7 +9,7 @@ const eventPayloadValidator = [
   body("time").trim().notEmpty().withMessage("Time is required."),
   body("location").trim().notEmpty().withMessage("Location is required.").isLength({ max: 180 }),
   body("category").optional({ values: "falsy" }).trim(),
-  body("image").trim().notEmpty().withMessage("Image is required."),
+  body("image").optional({ values: "falsy" }).trim(),
   body("bannerImage").optional({ values: "falsy" }).trim(),
   body("featured").optional().isBoolean(),
   body("status").optional().isIn(["Draft", "Published", "Archived"]),

@@ -9,6 +9,7 @@ const eventSchema = new mongoose.Schema(
     location: { type: String, required: true, trim: true, maxlength: 180 },
     category: { type: String, trim: true, default: "General" },
     image: { type: String, required: true, trim: true },
+    cloudinaryId: { type: String, default: "" },
     bannerImage: { type: String, trim: true, default: "" },
     featured: { type: Boolean, default: false, index: true },
     status: {

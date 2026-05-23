@@ -28,6 +28,22 @@ const env = {
     windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
     max: Number(process.env.RATE_LIMIT_MAX) || 100,
   },
+  firebase: {
+    projectId: process.env.FIREBASE_PROJECT_ID || "",
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL || "",
+    // .env stores \n as literal backslash-n — convert to real newlines
+    privateKey: (process.env.FIREBASE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
+  },
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
+    apiKey:    process.env.CLOUDINARY_API_KEY    || "",
+    apiSecret: process.env.CLOUDINARY_API_SECRET || "",
+  },
+  admin: {
+    email:    process.env.ADMIN_EMAIL    || "admin@sheesh.com",
+    password: process.env.ADMIN_PASSWORD || "",
+    name:     process.env.ADMIN_NAME     || "Super Admin",
+  },
 };
 
 module.exports = env;

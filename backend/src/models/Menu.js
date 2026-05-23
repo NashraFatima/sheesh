@@ -13,6 +13,7 @@ const menuSchema = new mongoose.Schema(
     subcategory: { type: String, trim: true, default: "" },
     price: { type: Number, required: true, min: 0 },
     image: { type: String, required: true, trim: true },
+    cloudinaryId: { type: String, default: "" },
     tags: [{ type: String, enum: ["Popular", "Staff Pick", "Customer Fav", "New"] }],
     featured: { type: Boolean, default: false, index: true },
     layout: { type: String, enum: ["default", "wide"], default: "default" },

@@ -1,36 +1,45 @@
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "../../.env") });
 
 const mongoose = require("mongoose");
 const Admin = require("../models/Admin");
 
-mongoose.connect(process.env.MONGO_URI);
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/sheesh";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@sheesh.com";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const ADMIN_NAME = process.env.ADMIN_NAME || "Super Admin";
 
-const seedAdmin = async () => {
-  try {
-    const existingAdmin = await Admin.findOne({
-      email: "admin@sheesh.com",
-    });
+if (!ADMIN_PASSWORD) {
+  console.error("❌  ADMIN_PASSWORD must be set in backend/.env");
+  process.exit(1);
+}
 
-    if (existingAdmin) {
-      console.log("Admin already exists");
-      process.exit();
-    }
+const seed = async () => {
+  await mongoose.connect(MONGO_URI);
+  console.log("✅  Connected to MongoDB");
 
-    const admin = await Admin.create({
-      name: "Super Admin",
-      email: "admin@sheesh.com",
-      password: "admin123",
-      role: "super-admin",
-    });
-
-    console.log("Admin created successfully");
-    console.log(admin);
-
-    process.exit();
-  } catch (error) {
-    console.log(error);
-    process.exit(1);
+  const existing = await Admin.findOne({ email: ADMIN_EMAIL });
+  if (existing) {
+    console.log(`ℹ️   Admin already exists: ${ADMIN_EMAIL}`);
+    await mongoose.disconnect();
+    return;
   }
+
+  const admin = await Admin.create({
+    name: ADMIN_NAME,
+    email: ADMIN_EMAIL,
+    password: ADMIN_PASSWORD,
+    role: "super-admin",
+  });
+
+  console.log("✅  Admin created:");
+  console.log(`    Name  : ${admin.name}`);
+  console.log(`    Email : ${admin.email}`);
+  console.log(`    Role  : ${admin.role}`);
+  await mongoose.disconnect();
 };
 
-seedAdmin();
+seed().catch((err) => {
+  console.error("❌  Seed failed:", err.message);
+  process.exit(1);
+});

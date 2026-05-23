@@ -8,7 +8,7 @@ const menuPayloadValidator = [
   body("category").isIn(["food", "hookah", "drinks", "desserts"]).withMessage("Invalid category."),
   body("subcategory").optional({ values: "falsy" }).trim(),
   body("price").isFloat({ min: 0 }).withMessage("Price must be zero or greater."),
-  body("image").trim().notEmpty().withMessage("Image is required."),
+  body("image").optional({ values: "falsy" }).trim(),
   body("isAvailable").optional().isBoolean(),
   body("featured").optional().isBoolean(),
   body("layout").optional().isIn(["default", "wide"]),

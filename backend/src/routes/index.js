@@ -8,6 +8,7 @@ const galleryRoutes = require("./galleryRoutes");
 const inquiryRoutes = require("./inquiryRoutes");
 const menuRoutes = require("./menuRoutes");
 const reservationRoutes = require("./reservationRoutes");
+const userRoutes = require("./userRoutes");
 
 const router = express.Router();
 
@@ -26,5 +27,6 @@ router.use("/gallery", galleryRoutes);
 router.use("/inquiries", inquiryRoutes);
 router.use("/dashboard", dashboardRoutes);
 router.use("/admins", adminRoutes);
+router.use("/users", userRoutes);
 
 module.exports = router;
