@@ -94,8 +94,8 @@ export function MenuPageContent() {
   }, [menuItems, category, subFilter, search]);
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden pt-24 pb-20 md:pt-28 md:pb-24">
-      <FloatingParticles count={16} className="hidden opacity-30 md:block" />
+    <div className="relative min-h-screen overflow-x-hidden pt-24 pb-20 pb-mobile-cta md:pt-28 md:pb-24">
+      <FloatingParticles count={10} className="hidden opacity-30 md:block" />
       <SmokeOverlay className="opacity-40" />
 
       <div className="relative mx-auto mb-12 max-w-7xl px-4 sm:px-6 md:mb-16 md:px-12 lg:px-20">

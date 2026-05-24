@@ -16,9 +16,10 @@ export const menuImages = {
   fries: p(1893556),
   wings: p(60616),
   chaat: p(1640777),      // replaced unreliable high-ID
-  hookah: p(1806038),
-  hookahLounge: p(1267320),
-  hookahPremium: p(1806038),
+  hookah: p(341481),           // hookah narguile smoke — atmospheric dark
+  hookahLounge: p(30562747),   // glowing hookah coals in traditional setup
+  hookahPremium: p(30694805),  // close-up hookah with glowing charcoal
+  hookahGreen: p(4538912),     // selective focus green hookah
   mocktails: p(1125720),
   milkshakes: p(103566),
   juices: p(143133),
@@ -92,7 +93,7 @@ export function resolveMenuImage(
       return menuImages.hookahPremium;
     }
     if (subcategory === "house-mixes") return menuImages.hookahLounge;
-    return menuImages.hookah;
+    return menuImages.hookahGreen;
   }
 
   if (category === "drinks" && subcategory) {

@@ -1,87 +1,133 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { menuImages } from "@/lib/menu-images";
+import { Star, Quote } from "lucide-react";
 
-const reviews = [
+const REVIEWS = [
   {
-    quote:
-      "Sheesh is Dallas's premier hookah lounge — the food, the clouds, the vibe. Nothing else comes close.",
-    author: "Amir K.",
-    role: "Regular Guest",
+    quote: "Sheesh is Dallas's premier hookah lounge — the food, the clouds, the vibe. Nothing else comes close.",
+    author: "Amir K.", role: "Regular Guest", stars: 5,
+    initial: "AK",
   },
   {
-    quote:
-      "Voice of Sheesh had production quality you'd expect at a major venue. Season 1 can't come soon enough.",
-    author: "Sarah M.",
-    role: "Event Attendee",
+    quote: "Voice of Sheesh had production quality you'd expect at a major venue. Season 1 can't come soon enough.",
+    author: "Sarah M.", role: "Event Attendee", stars: 5,
+    initial: "SM",
   },
   {
-    quote:
-      "The BBQ platter and Sheesh Mix are why we keep coming back. True luxury hospitality.",
-    author: "James T.",
-    role: "Dallas Foodie",
+    quote: "The BBQ platter and Sheesh Mix are why we keep coming back. True luxury hospitality in Dallas.",
+    author: "James T.", role: "Dallas Foodie", stars: 5,
+    initial: "JT",
+  },
+  {
+    quote: "Brought my whole crew for a birthday — flawless service, fire hookah, and the vibes were immaculate.",
+    author: "Layla R.", role: "Private Event Host", stars: 5,
+    initial: "LR",
+  },
+  {
+    quote: "The Mediterranean spread is unlike anything else in the city. Feels like you're dining in another world.",
+    author: "Marcus D.", role: "Food Critic", stars: 5,
+    initial: "MD",
+  },
+  {
+    quote: "Premium shisha experience — smooth clouds, exotic flavors, beautiful space. A must-visit in Dallas.",
+    author: "Priya N.", role: "Hookah Enthusiast", stars: 5,
+    initial: "PN",
   },
 ];
 
-export function ReviewsSection() {
+const doubled = [...REVIEWS, ...REVIEWS];
+
+function ReviewCard({ review }: { review: typeof REVIEWS[0] }) {
   return (
-    <section id="reviews" className="relative section-padding bg-[#0c0c0e]">
-      <div className="mx-auto max-w-7xl">
-        <SectionHeading eyebrow="Guest Reviews" title="Whispers of Excellence" />
-        <div className="mt-10 md:mt-12 grid gap-8 md:grid-cols-3">
-          {reviews.map((review, i) => (
-            <motion.div
-              key={review.author}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.2, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="group glass-luxury relative overflow-hidden rounded-2xl p-8 transition-all duration-700 ease-out hover:-translate-y-1.5 hover:border-[#d4af37]/35 hover:shadow-[0_16px_50px_rgba(212,175,55,0.08)] bg-[#141418]/60"
-            >
-              {/* Technical overlay */}
-              <div className="absolute top-5 right-5 z-10 font-[family-name:var(--font-accent)] text-[8px] tracking-[0.2em] text-white/20 uppercase pointer-events-none">
-                GUEST // 0{i + 1}
-              </div>
+    <div className="relative w-[300px] sm:w-[340px] shrink-0 rounded-2xl border border-white/[0.07] bg-[#0c0c0e]/70 backdrop-blur-md p-6 mx-3 card-lift group overflow-hidden">
+      {/* Gold corner accent */}
+      <div className="absolute top-0 left-0 h-12 w-12 opacity-40"
+        style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.3), transparent 60%)" }}
+      />
 
-              {/* Inner luxury hairline */}
-              <div className="absolute inset-4 z-10 border border-white/5 pointer-events-none rounded-xl transition-colors duration-700 group-hover:border-[#d4af37]/10" />
+      {/* Quote icon */}
+      <div className="absolute top-5 right-5 opacity-10">
+        <Quote className="size-8 text-[#d4af37]" />
+      </div>
 
-              <div className="relative mb-5 flex items-center gap-3">
-                <div className="relative size-12 overflow-hidden rounded-full border border-[#d4af37]/30">
-                  <Image
-                    src={menuImages.lounge}
-                    alt=""
-                    fill
-                    className="object-cover opacity-80"
-                    sizes="48px"
-                  />
-                </div>
-                <div className="flex gap-0.5">
-                  {Array.from({ length: 5 }).map((_, s) => (
-                    <span key={s} className="text-[#d4af37] text-xs">
-                      ★
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <p className="font-[family-name:var(--font-body)] text-sm leading-relaxed text-white/70 italic">
-                &ldquo;{review.quote}&rdquo;
-              </p>
-              <div className="mt-6 border-t border-white/10 pt-4">
-                <p className="font-[family-name:var(--font-display)] text-sm text-[#d4af37]">
-                  {review.author}
-                </p>
-                <p className="font-[family-name:var(--font-accent)] text-[9px] tracking-[0.2em] text-white/40 uppercase">
-                  {review.role}
-                </p>
-              </div>
-            </motion.div>
-          ))}
+      {/* Stars */}
+      <div className="flex gap-0.5 mb-4">
+        {Array.from({ length: review.stars }).map((_, i) => (
+          <Star key={i} className="size-3 fill-[#d4af37] text-[#d4af37]" />
+        ))}
+      </div>
+
+      {/* Quote text */}
+      <p className="font-[family-name:var(--font-body)] text-sm leading-relaxed text-white/65 italic mb-5">
+        &ldquo;{review.quote}&rdquo;
+      </p>
+
+      {/* Author */}
+      <div className="flex items-center gap-3 border-t border-white/[0.06] pt-4">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#8b6914] to-[#d4af37] text-[#050505] font-[family-name:var(--font-display)] text-xs font-medium">
+          {review.initial}
+        </div>
+        <div>
+          <p className="font-[family-name:var(--font-display)] text-sm text-[#d4af37]">{review.author}</p>
+          <p className="font-[family-name:var(--font-accent)] text-[8px] tracking-[0.18em] text-white/35 uppercase">{review.role}</p>
         </div>
       </div>
+
+      {/* Hover glow */}
+      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+        style={{ boxShadow: "inset 0 0 0 1px rgba(212,175,55,0.15)" }}
+      />
+    </div>
+  );
+}
+
+export function ReviewsSection() {
+  return (
+    <section id="reviews" className="relative overflow-hidden bg-[#080808] py-20 sm:py-28">
+      {/* Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_100%,rgba(212,175,55,0.04),transparent)]" />
+
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 mb-12 sm:mb-16">
+        <SectionHeading
+          eyebrow="Guest Reviews"
+          title="Whispers of Excellence"
+          subtitle="Thousands of guests, one shared sentiment — Sheesh is unlike anything else."
+        />
+      </div>
+
+      {/* Marquee row 1 */}
+      <div className="relative overflow-hidden mask-fade-sides pause-on-hover mb-5">
+        <div className="flex animate-marquee w-max">
+          {doubled.map((r, i) => <ReviewCard key={i} review={r} />)}
+        </div>
+      </div>
+
+      {/* Marquee row 2 — reverse */}
+      <div className="relative overflow-hidden mask-fade-sides pause-on-hover">
+        <div className="flex animate-marquee-fast w-max" style={{ animationDirection: "reverse" }}>
+          {doubled.map((r, i) => <ReviewCard key={i} review={r} />)}
+        </div>
+      </div>
+
+      {/* Bottom CTA */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="mt-14 sm:mt-18 flex flex-col items-center gap-3 px-5"
+      >
+        <div className="flex items-center gap-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Star key={i} className="size-4 fill-[#d4af37] text-[#d4af37]" />
+          ))}
+        </div>
+        <p className="font-[family-name:var(--font-body)] text-sm text-white/45 text-center">
+          Rated 4.9 / 5 across hundreds of verified guest reviews
+        </p>
+      </motion.div>
     </section>
   );
 }

@@ -57,7 +57,9 @@ export function FranchisePageContent() {
   };
 
   return (
-    <div className="relative min-h-screen pt-28 pb-24">
+    <div className="relative min-h-screen pt-24 pb-20 pb-mobile-cta overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_40%_at_50%_0%,rgba(212,175,55,0.07),transparent_65%)]" />
+      <div className="film-grain absolute inset-0" />
       <section className="section-padding relative">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.1),transparent_50%)]" />
         <div className="relative mx-auto max-w-7xl">

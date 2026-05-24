@@ -1,5 +1,4 @@
-const ADMIN_SLUG = process.env.NEXT_PUBLIC_ADMIN_SLUG || "admin";
-const BASE = `/${ADMIN_SLUG}/admin`;
+const BASE = `/admin`;
 
 export const adminNavItems = [
   { href: `${BASE}/dashboard`,    label: "Dashboard",              icon: "layout-dashboard" },

@@ -1,37 +1,25 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { useMemo } from "react";
 
 interface FloatingParticlesProps {
   count?: number;
   className?: string;
 }
 
-export function FloatingParticles({
-  count = 40,
-  className = "",
-}: FloatingParticlesProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
+/* Pure CSS animations — zero JS per frame, GPU composited */
+export function FloatingParticles({ count = 18, className = "" }: FloatingParticlesProps) {
   const particles = useMemo(() => {
     const seed = (n: number) => ((n * 9301 + 49297) % 233280) / 233280;
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       x: seed(i) * 100,
       y: seed(i + 7) * 100,
-      size: 1 + seed(i + 3) * 2.5,
-      duration: 10 + seed(i + 5) * 6,
-      delay: seed(i + 2) * 3,
-      drift: -24 - (i % 5) * 6,
+      size: 1 + seed(i + 3) * 2,
+      duration: 10 + seed(i + 5) * 8,
+      delay: -(seed(i + 2) * 12),
     }));
   }, [count]);
-
-  if (!mounted) return null;
 
   return (
     <div
@@ -39,7 +27,7 @@ export function FloatingParticles({
       className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
     >
       {particles.map((p) => (
-        <motion.span
+        <span
           key={p.id}
           className="absolute rounded-full bg-[#d4af37]"
           style={{
@@ -47,20 +35,17 @@ export function FloatingParticles({
             top: `${p.y}%`,
             width: p.size,
             height: p.size,
-            opacity: 0.35,
-          }}
-          animate={{
-            y: [0, p.drift, 0],
-            opacity: [0.15, 0.5, 0.15],
-          }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            repeat: Infinity,
-            ease: "easeInOut",
+            opacity: 0.2,
+            animation: `particle-float ${p.duration}s ${p.delay}s ease-in-out infinite`,
           }}
         />
       ))}
+      <style>{`
+        @keyframes particle-float {
+          0%, 100% { transform: translateY(0); opacity: 0.12; }
+          50% { transform: translateY(-28px); opacity: 0.45; }
+        }
+      `}</style>
     </div>
   );
 }

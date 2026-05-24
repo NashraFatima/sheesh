@@ -33,8 +33,10 @@ export function CateringPageContent() {
   };
 
   return (
-    <div className="relative min-h-screen pt-28 pb-24">
-      <div className="section-padding mx-auto grid max-w-7xl items-start gap-16 lg:grid-cols-2">
+    <div className="relative min-h-screen pt-24 pb-20 pb-mobile-cta overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_40%_at_50%_10%,rgba(212,175,55,0.06),transparent_65%)]" />
+      <div className="film-grain absolute inset-0" />
+      <div className="section-padding relative mx-auto grid max-w-7xl items-start gap-10 lg:grid-cols-2 lg:gap-16">
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
@@ -46,15 +48,20 @@ export function CateringPageContent() {
             title="Events Elevated"
             subtitle="From intimate gatherings to grand celebrations — our culinary team and lounge specialists craft bespoke Sheesh experiences at your venue."
           />
-          <div className="group relative mt-10 aspect-[4/3] overflow-hidden rounded-3xl border border-[#d4af37]/10">
+          <div className="group relative mt-10 aspect-[4/3] overflow-hidden rounded-3xl border border-[#d4af37]/10 transition-all duration-700 hover:border-[#d4af37]/30 hover:shadow-[0_16px_50px_rgba(212,175,55,0.1)]">
+            <div className="absolute top-5 left-5 z-10 font-[family-name:var(--font-accent)] text-[8px] tracking-[0.25em] text-[#d4af37]/75 uppercase pointer-events-none">
+              CAM · 02 CATERING
+            </div>
             <Image
               src={menuImages.catering}
               alt="Sheesh catering"
               fill
-              className="object-cover transition-transform duration-[1.4s] group-hover:scale-105"
+              className="object-cover transition-transform duration-[2s] group-hover:scale-105"
               sizes="50vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/90 via-[#050505]/20 to-transparent" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(212,175,55,0.1),transparent_55%)]" />
+            <div className="absolute inset-4 z-10 border border-white/[0.04] rounded-2xl pointer-events-none group-hover:border-[#d4af37]/12 transition-colors duration-700" />
           </div>
           <ul className="mt-8 space-y-3 font-[family-name:var(--font-body)] text-sm text-white/55">
             <li>— Full-service catering & premium hookah stations</li>
