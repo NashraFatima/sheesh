@@ -107,8 +107,5 @@
   }
 }
 
-/* Hide native cursor when custom cursor is active (desktop only) */
-body.custom-cursor-active,
-body.custom-cursor-active * {
-  cursor: none !important;
-}
+/* Ensure the native cursor is not hidden; keep default cursor behavior */
+/* Removed custom cursor hiding to restore native pointer/text cursors */
