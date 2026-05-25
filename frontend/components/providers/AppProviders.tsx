@@ -16,7 +16,6 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       <SmoothScrollProvider>
         <ReservationProvider>
           <ScrollProgressBar />
-          <CustomCursor />
           <LoadingScreen />
           <AmbientGlow />
           <WelcomeToast />
